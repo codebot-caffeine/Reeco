@@ -11,39 +11,76 @@ import {
   selectAllFoodItems,
 } from "../../reduxAndJson/foodItems";
 import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+
+//
+import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
+import { Modal, Button, Form } from 'react-bootstrap';
 
 const TableComponent = () => {
   const dispatch = useDispatch();
   const allFoodItems = useSelector(selectAllFoodItems);
 
-  const handleUpdatePriceAndQuantity = (index, newPrice, newQuantity) => {
-    dispatch(updatePriceAndQuantity({ index, newPrice, newQuantity }));
+  // const [showModal, setShowModal] = useState(false);
+
+  const [modalData, setModalData] = useState({
+    showModal: false,
+    selectedIndex: null,
+    newPrice: '',
+    newQuantity: '',
+  });
+
+  const handleAction = (actionType, ...args) => {
+    switch (actionType) {
+      case 'updatePriceAndQuantity':
+        if (!isValidNumber(modalData.newPrice) || !isValidNumber(modalData.newQuantity) || modalData.newQuantity < 1) {
+          alert('Invalid input for price or quantity. Please enter a valid number greater than 0.');
+          return;
+        }
+        dispatch(updatePriceAndQuantity(...args));
+        break;
+      case 'addItem':
+        dispatch(addItem(...args));
+        break;
+      case 'markAsAvailable':
+        dispatch(markAsAvailable(...args));
+        break;
+      case 'markAsSoldOut':
+        dispatch(markAsSoldOut(...args));
+        break;
+      case 'updateQuantity':
+        dispatch(updateQuantity(...args));
+        break;
+      default:
+        break;
+    }
+    handleClose();
   };
 
-  const handleUpdateQuantity = (index, newQuantity) => {
-    dispatch(updateQuantity({ index, newQuantity }));
+  const handleShow = (index) => {
+    setModalData({
+      showModal: true,
+      selectedIndex: index,
+      newPrice: '',
+      newQuantity: '',
+    });
   };
 
-  const handleMarkAsAvailable = (index) => {
-    dispatch(markAsAvailable(index));
+  const handleClose = () => {
+    setModalData({
+      showModal: false,
+      selectedIndex: null,
+      newPrice: '',
+      newQuantity: '',
+    });
   };
 
-  const handleMarkAsSoldOut = (index) => {
-    dispatch(markAsSoldOut(index));
+  const handleInputChange = (e, setter) => {
+    setter(e.target.value);
   };
 
-
-  const handleAddItem = () => {
-    dispatch(
-      addItem({
-        foodName: "New Item",
-        brand: "New Brand",
-        price: 9.99,
-        quantity: 3,
-        total: 29.97,
-        status: "",
-      })
-    );
+  const isValidNumber = (value) => {
+    return !isNaN(parseFloat(value)) && isFinite(value);
   };
 
   return (
@@ -70,26 +107,82 @@ const TableComponent = () => {
               <td>${item.total.toFixed(2)}</td>
               <td>{item.status}</td>
               <td>
-              <button onClick={() => handleUpdatePriceAndQuantity(index, item.price + 1, item.quantity)}>
-                  Update Price
-                </button>
-                <button onClick={() => handleUpdateQuantity(index, item.quantity + 1)}>
-                  Update Quantity
-                </button>
-                <button onClick={() => handleAddItem()}>
-                  Add Item
-                </button>
-                <button onClick={() => handleMarkAsAvailable(index)}>
+                <Button
+                  //style={{ color: item.status === 'Available' ? 'green' : item.status === 'Sold Out' ? 'red' : 'black' }}
+                  style= {{ color: item.status === 'Available' ? 'green' : '' }} //"success"
+                  onClick={() => handleAction("markAsAvailable", index)}
+                >
                   Mark as Available
-                </button>
-                <button onClick={() => handleMarkAsSoldOut(index)}>
+                </Button>
+                <Button
+                  style={{ color: item.status === 'Sold Out' ? 'red' : '' }}
+                  // variant="danger"
+                  onClick={() => handleAction("markAsSoldOut", index)}
+                >
                   Mark as Sold Out
-                </button>
+                </Button>
+                <Button variant="primary" onClick={() => handleShow(index)}>
+                  Open Modal
+                </Button>
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
+      <Modal show={modalData.showModal} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Update Price and Quantity</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="formNewPrice">
+              <Form.Label>New Price</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Enter new price"
+                value={modalData.newPrice}
+                min={1}
+                onChange={(e) =>
+                  handleInputChange(e, (value) =>
+                    setModalData({ ...modalData, newPrice: value })
+                  )
+                }
+              />
+            </Form.Group>
+            <Form.Group controlId="formNewQuantity">
+              <Form.Label>New Quantity</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Enter new quantity"
+                value={modalData.newQuantity}
+                min={1}
+                onChange={(e) =>
+                  handleInputChange(e, (value) =>
+                    setModalData({ ...modalData, newQuantity: value })
+                  )
+                }
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() =>
+              handleAction("updatePriceAndQuantity", {
+                index: modalData.selectedIndex,
+                newPrice: parseFloat(modalData.newPrice),
+                newQuantity: parseInt(modalData.newQuantity, 10),
+              })
+            }
+          >
+            Update Price and Quantity
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
