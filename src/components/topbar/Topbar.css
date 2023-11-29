@@ -1,0 +1,54 @@
+.navbar{
+    background-color: green;
+}
+
+.navbar a{
+    color: white;
+}
+
+.navDown {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.navDown h4 {
+    font-size: 18px;
+    font-weight: bold;
+    line-height: normal;
+    margin: 0;
+}
+
+.breadcrumb {
+    margin: 0 !important;
+
+}
+
+.breadcrumb li a{
+    color: #808080;
+}
+
+.btn-pair {
+    display: flex;
+    column-gap: 8px;
+}
+
+.btn-pair button {
+    border-radius: 30px;
+}
+
+.btn-pair button:first-child {
+    border-color: #008000;
+    color: #008000;
+}
+
+.btn-pair button:last-child {
+    background-color: #008000;
+}
+
+.secondaryNav {
+    padding: 6px 0;
+    background-color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+}

@@ -1,0 +1,53 @@
+.button-design {
+    background-color: transparent;
+    border: none;
+    color: black;
+}
+
+.listClass {
+    border: none;
+    position: relative;
+}
+
+.listClass div{
+    position: relative;
+    padding-right: 15px;
+    padding-left: 15px;
+    text-align: left;
+}
+
+.listClass div:not(:last-child)::after {
+    top: 0;
+    content: '';
+    width: 1px;
+    height: 90%;
+    background-color: #adb5bd;
+    position: absolute;
+    right: 0;
+    display: block;
+}
+
+.inputSearch{
+     max-width: 360px;
+     border-radius: 30px !important;
+     border-color: #808080;
+}
+
+.addItem {
+    border-color: #008000;
+    color: #008000;
+    border-radius: 30px;
+    margin-right: 10px;
+}
+
+.tableCss thead tr{
+    border: 1px #e4e4e4 solid;
+}
+
+.tableCss tbody tr{
+    border-bottom: 1px #d5d4d4 solid;
+}
+
+.tableCss tbody tr td:last-child{
+    background-color: #dee2e6;
+}
