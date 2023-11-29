@@ -40,3 +40,10 @@ export const foodItems = [
       "status": "Available"
     }
   ]
+
+export const reasons = [
+ " Missing Product",
+  "Quantity is not the same",
+  "Price is not the same",
+  "Other"
+]

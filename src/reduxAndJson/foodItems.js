@@ -9,17 +9,17 @@ const foodItemsSlice = createSlice({
   ],
   reducers: {
     updatePriceAndQuantity: (state, action) => {
-      const { index, newPrice, newQuantity } = action.payload;
+      const { index, newPrice, newQuantity ,status} = action.payload;
       if (index >= 0 && index < state.length) {
         if (
           state[index].price !== newPrice &&
           state[index].quantity !== newQuantity
         ) {
-          state[index].status = "Price and Quantity Updated";
+          state[index].status = status == '' ? "Price and Quantity Updated" : status;
         } else if (state[index].price !== newPrice) {
-          state[index].status = "Price Updated";
+          state[index].status = status == '' ? "Price Updated": status;
         } else if (state[index].quantity !== newQuantity) {
-          state[index].status = "Quantity Updated";
+          state[index].status = status == '' ? "Quantity Updated":status;
         }
         state[index].price = newPrice;
         state[index].quantity = newQuantity;
@@ -43,6 +43,13 @@ const foodItemsSlice = createSlice({
       const index = action.payload;
       if (index >= 0 && index < state.length) {
         state[index].status = "Sold Out";
+      }
+    },
+
+    markAsSoldOutUrgent: (state, action) => {
+      const index = action.payload;
+      if (index >= 0 && index < state.length) {
+        state[index].status = "Sold Out Urgent";
       }
     },
     updateQuantity: (state, action) => {
@@ -69,6 +76,7 @@ export const {
   addItem,
   markAsAvailable,
   markAsSoldOut,
+  markAsSoldOutUrgent,
   updateQuantity,
 } = foodItemsSlice.actions;
 

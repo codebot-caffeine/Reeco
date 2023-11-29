@@ -65,3 +65,107 @@
     border: none;
     border-radius: 30px;
 }
+
+.neededNormal{
+    background-color: #ff8c00;
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+}
+
+
+.head_text{
+    font-size: 18px;
+}
+.sub_text{
+    font-size: 14px;
+    color: gainsboro;
+}
+.container-div{
+    width: 600px;
+    height: auto;
+    background-color: #fff;
+    border-radius: 15px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 30px 40px 80px 40px;
+    /* border: 2px solid #ed1a36; */
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+    
+}
+.price_box{
+    display: flex;
+    justify-content: space-between;
+}
+.price_box>div{
+    width: 200px;
+}
+img{
+    height: 180px;
+    background-color: transparent;
+}
+.input_box{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+input{
+    border: none;
+}
+input[type="number"] {
+    border: none;
+    width: 68px;
+    height: 30px;
+    border-radius: 6px;
+  
+    border: 1px solid gainsboro;
+}
+.label_box{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 50px;
+font-weight: 600;}
+.cross_icon{
+    position: relative;
+    
+}
+.cross_icon i{
+    position: absolute;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+}
+.btn_box > button{
+    border: none;
+    background: transparent;
+    border: 2px solid gainsboro;
+    padding: 10px 15px;
+    border-radius: 20px;
+    opacity: 0.6;
+
+}
+.btn_box > button:hover{
+    opacity: 1;
+}
+.btn2_box{
+    float: right;
+    margin-top: 20px;
+}
+.cls{
+    border: none;
+    color: green;
+    background: transparent;
+    cursor: pointer;
+}
+.send{
+    border: none;
+    background: transparent;
+    
+    padding: 10px 25px;
+    border-radius: 20px;
+    background-color: green;
+    color: #fff;
+    cursor: pointer;
+}

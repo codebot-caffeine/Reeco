@@ -1,12 +1,14 @@
 // TableComponent.js
 import React from "react";
 import { Container, Table } from "react-bootstrap";
+import { reasons } from "../../reduxAndJson/json";
 import store from "../../reduxAndJson/store";
 import {
   updatePriceAndQuantity,
   addItem,
   markAsAvailable,
   markAsSoldOut,
+  markAsSoldOutUrgent,
   updateQuantity,
   selectAllFoodItems,
 } from "../../reduxAndJson/foodItems";
@@ -22,9 +24,8 @@ import "./Table.css";
 import Card from "react-bootstrap/Card";
 import ListGroup from "react-bootstrap/ListGroup";
 import InputGroup from "react-bootstrap/InputGroup";
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 const TableComponent = () => {
   const dispatch = useDispatch();
@@ -34,10 +35,11 @@ const TableComponent = () => {
 
   const [modalData, setModalData] = useState({
     showModal: false,
-    showConfirmationModal:false,
+    showConfirmationModal: false,
     selectedIndex: null,
     newPrice: "",
     newQuantity: "",
+    status: "",
   });
 
   const total = allFoodItems.reduce((x, y) => {
@@ -82,13 +84,16 @@ const TableComponent = () => {
   };
 
   const handleAction = (actionType, ...args) => {
-    console.log(args)
+    // console.log(args);
+    console.log(actionType,args);
     switch (actionType) {
+      
       case "updatePriceAndQuantity":
         if (
           !isValidNumber(modalData.newPrice) ||
           !isValidNumber(modalData.newQuantity) ||
-          modalData.newQuantity < 1
+          modalData.newQuantity < 1 ||
+          modalData.newPrice < 1
         ) {
           alert(
             "Invalid input for price or quantity. Please enter a valid number greater than 0."
@@ -106,6 +111,9 @@ const TableComponent = () => {
       case "markAsSoldOut":
         dispatch(markAsSoldOut(...args));
         break;
+      case "markAsSoldOutUrgent":
+          dispatch(markAsSoldOutUrgent(...args));
+          break;
       case "updateQuantity":
         dispatch(updateQuantity(...args));
         break;
@@ -118,31 +126,44 @@ const TableComponent = () => {
   const handleShow = (index) => {
     setModalData({
       showModal: true,
-      showConfirmationModal:false,
+      showConfirmationModal: false,
       selectedIndex: index,
       newPrice: "",
       newQuantity: "",
+      status: "",
     });
   };
 
-  
   const handleShowConfirm = (index) => {
     setModalData({
       showModal: false,
-      showConfirmationModal:true,
+      showConfirmationModal: true,
       selectedIndex: index,
       newPrice: "",
       newQuantity: "",
+      status: "",
     });
   };
 
   const handleClose = () => {
     setModalData({
       showModal: false,
-      showConfirmationModal:false,
+      showConfirmationModal: false,
       selectedIndex: null,
       newPrice: "",
       newQuantity: "",
+      status: "",
+    });
+  };
+
+  const handleCloseRetain = () => {
+    setModalData({
+      showModal: false,
+      showConfirmationModal: false,
+      selectedIndex: null,
+      newPrice: "",
+      newQuantity: "",
+      // status: "",
     });
   };
 
@@ -163,16 +184,17 @@ const TableComponent = () => {
             <Col>
               {" "}
               <InputGroup className="inputSearch">
-                <Form.Control
-                />
+                <Form.Control />
                 <InputGroup.Text id="basic-addon2">
                   <i class="fa-solid fa-magnifying-glass"></i>
                 </InputGroup.Text>
               </InputGroup>
             </Col>
             <Col className="text-end">
-            <button type="button" className="btn btn-outline-primary addItem">Add Item</button>
-            <i class="fa-solid fa-print" style={{color:"green"}}></i>
+              <button type="button" className="btn btn-outline-primary addItem">
+                Add Item
+              </button>
+              <i class="fa-solid fa-print" style={{ color: "green" }}></i>
             </Col>
           </Row>
         </Container>
@@ -194,7 +216,11 @@ const TableComponent = () => {
               {allFoodItems.map((item, index) => (
                 <tr key={index}>
                   <td>
-                  <img src={'/images/Avocadohass.jpg'} alt="Your Image" style={{height:"20px",width:"20px"}}/>
+                    <img
+                      src={"/images/Avocadohass.jpg"}
+                      alt="Your Image"
+                      style={{ height: "20px", width: "20px" }}
+                    />
                     {item.foodName}
                   </td>
                   <td>{item.brand}</td>
@@ -202,16 +228,31 @@ const TableComponent = () => {
                   <td>{item.quantity}</td>
                   <td>${item.total.toFixed(2)}</td>
                   <td>
-                    <Button className={item.status == 'Available' ? 'approved' : item.status == 'Sold Out' ? 'needed' : 'approved'}>
-                    {item.status == 'Available' ? 'Approved' : item.status == 'Sold Out' ? 'Missing-Urgent' : item.status}
+                    <Button
+                      className={
+                        item.status == "Available"
+                          ? "approved"
+                          : item.status == "Sold Out Urgent"
+                          ? "needed"
+                          : item.status == "Sold Out"
+                          ? "neededNormal"
+                          : "approved"
+                      }
+                    >
+                      {item.status == "Available"
+                        ? "Approved"
+                        : item.status == "Sold Out"
+                        ? "Missing" :
+                        item.status == "Sold Out Urgent"
+                        ? "Missing-Urgent"
+                        : item.status}
                     </Button>
-                    
                   </td>
                   <td>
                     <Button
                       //style={{ color: item.status === 'Available' ? 'green' : item.status === 'Sold Out' ? 'red' : 'black' }}
                       style={{
-                        color: item.status === "Available" ? "green" : "",
+                        color: item.status === "Available" ? "green" : "",background:'transparent'
                       }} //"success"
                       className="button-design"
                       onClick={() => handleAction("markAsAvailable", index)}
@@ -220,8 +261,9 @@ const TableComponent = () => {
                       <i class="fa-solid fa-check"></i>
                     </Button>
                     <Button
-                      style={{ color: item.status === "Sold Out" ? "red" : "" }}
+                      style={{ color: item.status === "Sold Out" ? "red" :item.status === "Sold Out Urgent" ? "red" :"" ,background:'transparent'}}
                       className="button-design"
+                      disabled = {item.status === "Sold Out" || item.status === "Sold Out Urgent"}
                       // variant="danger"
                       //onClick={() => handleAction("markAsSoldOut", index)}
                       onClick={() => handleShowConfirm(index)}
@@ -243,14 +285,26 @@ const TableComponent = () => {
         </Card.Body>
       </Card>
       <Modal show={modalData.showModal} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Update Price and Quantity</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="formNewPrice">
-              <Form.Label>New Price</Form.Label>
-              <Form.Control
+        <div class="container-div">
+          <div class="cross_icon">
+            <i class="fa fa-close" onClick={handleCloseRetain}></i>
+          </div>
+          <div>
+            <p class="head_text">
+              {allFoodItems[modalData.selectedIndex]?.foodName}
+            </p>
+          </div>
+          <div class="price_box">
+            <div>
+              <img src={"/images/Avocadohass.jpg"} alt="" />
+            </div>
+            <div class="label_box">
+              <label for="name">Price($)</label>
+              <label for="name">Quantity</label>
+            </div>
+            <div class="input_box">
+              <input
+                name="number"
                 type="number"
                 placeholder="Enter new price"
                 value={modalData.newPrice}
@@ -261,11 +315,9 @@ const TableComponent = () => {
                   )
                 }
               />
-            </Form.Group>
-            <Form.Group controlId="formNewQuantity">
-              <Form.Label>New Quantity</Form.Label>
-              <Form.Control
+              <input
                 type="number"
+                name="number"
                 placeholder="Enter new quantity"
                 value={modalData.newQuantity}
                 min={1}
@@ -275,37 +327,81 @@ const TableComponent = () => {
                   )
                 }
               />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          <Button
-            variant="primary"
-            onClick={() =>
-              handleAction("updatePriceAndQuantity", {
-                index: modalData.selectedIndex,
-                newPrice: parseFloat(modalData.newPrice),
-                newQuantity: parseInt(modalData.newQuantity, 10),
-              })
-            }
-          >
-            Update Price and Quantity
-          </Button>
-        </Modal.Footer>
+            </div>
+          </div>
+
+          <div>
+            <p class="head_text">
+              Choose Reason <span class="sub_text">(Optional)</span>
+            </p>
+            <div class="btn_box">
+              {reasons.map((e, i) => {
+                return (
+                  <button
+                    key={i}
+                    style={{borderColor:modalData.status == e ? 'blue' : ''}}
+                    onClick={() => setModalData({ ...modalData, status: e })}
+                  >
+                    {e}
+                  </button>
+                );
+              })}
+              {/* <button>Missing Product</button>
+              <button>Quantity is not the same</button>
+              <button>Price is not the same</button>
+              <button>Other</button> */}
+            </div>
+          </div>
+          <div class="btn2_box">
+            <button class="cls" onClick={handleClose}>
+              Cancel
+            </button>
+            <button
+              class="send"
+              onClick={() =>
+                handleAction("updatePriceAndQuantity", {
+                  index: modalData.selectedIndex,
+                  newPrice: parseFloat(modalData.newPrice),
+                  newQuantity: parseInt(modalData.newQuantity, 10),
+                  status: modalData.status,
+                })
+              }
+            >
+              Send
+            </button>
+          </div>
+        </div>
       </Modal>
 
       <Modal show={modalData.showConfirmationModal} onHide={handleClose}>
+        <Modal.Header>
+          <Modal.Title>Missing product?</Modal.Title>
+        </Modal.Header>
+
         <Modal.Body>
-          <p>Is {allFoodItems[modalData.selectedIndex]?.foodName} urgent?</p>
+          <p>Is {allFoodItems[modalData.selectedIndex]?.foodName} missing</p>
+          <div>
+            <Button className="cls"  onClick={() => setModalData({ ...modalData, status: 'Sold Out' })}>missing?</Button>
+            <Button  className="cls"  onClick={() => setModalData({ ...modalData, status: 'Sold Out Urgent' })} >Urgent?</Button>
+          </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="info" onClick={() => handleClose()} style={{border:'none',backgroundColor:'transparent'}}>
+          <Button
+            variant="info"
+            onClick={() => handleClose()}
+            style={{ border: "none", backgroundColor: "transparent" }}
+          >
             No
           </Button>
-          <Button variant="info" onClick={() => handleAction('markAsSoldOut',modalData.selectedIndex)} style={{border:'none',backgroundColor:'transparent'}}>
+          <Button
+            variant="info"
+            onClick={() =>
+              modalData.status == 'Sold Out' ? handleAction("markAsSoldOut", modalData.selectedIndex) :
+              modalData.status == 'Sold Out Urgent' ? handleAction("markAsSoldOutUrgent", modalData.selectedIndex)
+              :  handleAction("markAsSoldOut", modalData.selectedIndex)
+            }
+            style={{ border: "none", backgroundColor: "transparent" }}
+          >
             Yes
           </Button>
         </Modal.Footer>
