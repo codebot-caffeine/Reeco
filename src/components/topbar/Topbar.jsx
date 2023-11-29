@@ -39,7 +39,7 @@ function TopBar() {
       <Container >
           <BreadcrumbExample />
           <div className="navDown">
-            <h4>Order</h4>
+            <h4>Order 32457ABC</h4>
             <div className="btn-pair">
               <Button variant="outline-primary">Back</Button>
               <Button variant="primary">Approve order</Button>

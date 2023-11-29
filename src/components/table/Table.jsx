@@ -34,6 +34,7 @@ const TableComponent = () => {
 
   const [modalData, setModalData] = useState({
     showModal: false,
+    showConfirmationModal:false,
     selectedIndex: null,
     newPrice: "",
     newQuantity: "",
@@ -81,6 +82,7 @@ const TableComponent = () => {
   };
 
   const handleAction = (actionType, ...args) => {
+    console.log(args)
     switch (actionType) {
       case "updatePriceAndQuantity":
         if (
@@ -116,6 +118,18 @@ const TableComponent = () => {
   const handleShow = (index) => {
     setModalData({
       showModal: true,
+      showConfirmationModal:false,
+      selectedIndex: index,
+      newPrice: "",
+      newQuantity: "",
+    });
+  };
+
+  
+  const handleShowConfirm = (index) => {
+    setModalData({
+      showModal: false,
+      showConfirmationModal:true,
       selectedIndex: index,
       newPrice: "",
       newQuantity: "",
@@ -125,6 +139,7 @@ const TableComponent = () => {
   const handleClose = () => {
     setModalData({
       showModal: false,
+      showConfirmationModal:false,
       selectedIndex: null,
       newPrice: "",
       newQuantity: "",
@@ -178,12 +193,20 @@ const TableComponent = () => {
             <tbody>
               {allFoodItems.map((item, index) => (
                 <tr key={index}>
-                  <td>{item.foodName}</td>
+                  <td>
+                  <img src={'/images/Avocadohass.jpg'} alt="Your Image" style={{height:"20px",width:"20px"}}/>
+                    {item.foodName}
+                  </td>
                   <td>{item.brand}</td>
                   <td>${item.price.toFixed(2)}</td>
                   <td>{item.quantity}</td>
                   <td>${item.total.toFixed(2)}</td>
-                  <td>{item.status}</td>
+                  <td>
+                    <Button className={item.status == 'Available' ? 'approved' : item.status == 'Sold Out' ? 'needed' : 'approved'}>
+                    {item.status == 'Available' ? 'Approved' : item.status == 'Sold Out' ? 'Missing-Urgent' : item.status}
+                    </Button>
+                    
+                  </td>
                   <td>
                     <Button
                       //style={{ color: item.status === 'Available' ? 'green' : item.status === 'Sold Out' ? 'red' : 'black' }}
@@ -192,6 +215,7 @@ const TableComponent = () => {
                       }} //"success"
                       className="button-design"
                       onClick={() => handleAction("markAsAvailable", index)}
+                      // onClick={() => handleShowConfirm(index)}
                     >
                       <i class="fa-solid fa-check"></i>
                     </Button>
@@ -199,7 +223,8 @@ const TableComponent = () => {
                       style={{ color: item.status === "Sold Out" ? "red" : "" }}
                       className="button-design"
                       // variant="danger"
-                      onClick={() => handleAction("markAsSoldOut", index)}
+                      //onClick={() => handleAction("markAsSoldOut", index)}
+                      onClick={() => handleShowConfirm(index)}
                     >
                       <i class="fa-solid fa-xmark"></i>
                     </Button>
@@ -268,6 +293,20 @@ const TableComponent = () => {
             }
           >
             Update Price and Quantity
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={modalData.showConfirmationModal} onHide={handleClose}>
+        <Modal.Body>
+          <p>Is {allFoodItems[modalData.selectedIndex]?.foodName} urgent?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="info" onClick={() => handleClose()} style={{border:'none',backgroundColor:'transparent'}}>
+            No
+          </Button>
+          <Button variant="info" onClick={() => handleAction('markAsSoldOut',modalData.selectedIndex)} style={{border:'none',backgroundColor:'transparent'}}>
+            Yes
           </Button>
         </Modal.Footer>
       </Modal>
